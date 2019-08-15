@@ -1,1 +1,55 @@
+from IPython.display import display
 import numpy as np
+import pandas as pd
+
+train = pd.read_csv('./train.csv').replace({'male':'0', 'female':'1', 'S':'0', 'C':'1', 'Q':'2'})
+test = pd.read_csv('./test.csv').replace({'male':'0', 'female':'1', 'S':'0', 'C':'1', 'Q':'2'})
+
+display(train.head(5))
+display(test.head(5))
+
+
+#欠損データの処理
+print('-----------------------------------------------')
+print(train.isnull().sum())
+print('-----------------------------------------------')
+print(test.isnull().sum())
+
+train['Embarked'] = train['Embarked'].fillna(train['Embarked'].median())
+train['Age'] = train['Age'].fillna(train['Age'].median())
+
+test['Age'] = test['Age'].fillna(test['Age'].median())
+test.Fare[152] = test.Fare.median()
+
+
+X_train = train[['Pclass', 'Sex', 'Age', 'SibSp', 'Parch', 'Fare', 'Embarked']].values
+y_train = train['Survived'].values
+
+X_test = test[['Pclass', 'Sex', 'Age', 'SibSp', 'Parch', 'Fare', 'Embarked']].values
+
+
+#予測モデル
+from sklearn.model_selection import GridSearchCV
+from sklearn.model_selection import StratifiedKFold
+import lightgbm as lgb
+
+param_grid_lg = {'learning_rate': [0.01, 0.05, 0.1],
+                               'num_leaves': [23, 24, 25],
+                               'min_data_in_leaf': [23, 24, 25]}
+lgbm = lgb.LGBMClassifier()
+skf = StratifiedKFold(n_splits=4, shuffle=True, random_state=100)
+grid_search_lg = GridSearchCV(lgbm, param_grid_lg, cv=skf, n_jobs=1)
+grid_search_lg.fit(X_train, y_train)
+
+print('Best parameters: {}'.format(grid_search_lg.best_params_))
+print('Best Accuracy: {:.3f}'.format(grid_search_lg.best_score_))
+
+lgbm = lgb.LGBMClassifier(**best_parameters)
+lgbm.fit(X_train, y_train)
+print('Accuracy on training set: {:.3f}'. format(lgbm.score(X_train, y_train)))
+
+
+my_prediction = lgbm.predict(X_test)
+PassengerId = np.array(test['PassengerId']).astype(int)
+my_solution = pd.DataFrame(my_prediction, PassengerId, columns = ['Survived'])
+my_solution.to_csv('myprediction.csv', index_label = ['PassengerId'])
