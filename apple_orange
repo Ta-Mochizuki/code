@@ -7,6 +7,7 @@ from keras.applications.vgg16 import VGG16
 from keras.models import Model, Sequential
 from keras import optimizers
 
+#kaggleのDatasetsの「Apples Bananas Oranges」のページ(https://www.kaggle.com/sriramr/apples-bananas-oranges)
 path_apples = os.listdir('./fruits_data/freshapples/')
 path_oranges = os.listdir('./fruits_data/freshoranges/')
 
