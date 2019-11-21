@@ -44,7 +44,7 @@ grid_search_lg.fit(X_train, y_train)
 print('Best parameters: {}'.format(grid_search_lg.best_params_))
 print('Best Accuracy: {:.3f}'.format(grid_search_lg.best_score_))
 
-lgbm = lgb.LGBMClassifier(**best_parameters)
+lgbm = lgb.LGBMClassifier(learning_rate=0.05, min_data_in_leaf=24, num_leaves=24)
 lgbm.fit(X_train, y_train)
 print('Accuracy on training set: {:.3f}'. format(lgbm.score(X_train, y_train)))
 
