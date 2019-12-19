@@ -34,8 +34,8 @@ from sklearn.model_selection import StratifiedKFold
 import lightgbm as lgb
 
 param_grid_lg = {'learning_rate': [0.01, 0.05, 0.1],
-                               'num_leaves': [23, 24, 25],
-                               'min_data_in_leaf': [23, 24, 25]}
+                 'num_leaves': [23, 24, 25],
+                 'min_data_in_leaf': [23, 24, 25]}
 lgbm = lgb.LGBMClassifier()
 skf = StratifiedKFold(n_splits=4, shuffle=True, random_state=100)
 grid_search_lg = GridSearchCV(lgbm, param_grid_lg, cv=skf, n_jobs=1)
